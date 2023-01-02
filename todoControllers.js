@@ -2,9 +2,10 @@
 var bodyParser = require('body-parser');
 var urlencodedParser = bodyParser.urlencoded({extended: false});
 const mongoose = require('mongoose');
-
+ 
+var psw = require('./psw.js'); 
 //Connect to Mongoose
-mongoose.connect('mongodb+srv://antoine:antoinetest@cluster0.qh9so.mongodb.net/antoine?retryWrites=true&w=majority',
+mongoose.connect('mongodb+srv://antoine:'+psw+'@cluster0.qh9so.mongodb.net/?retryWrites=true&w=majority',
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
@@ -31,12 +32,12 @@ module.exports = function(app) {
     })
   });
 
-  // Add an item
+ // Add an item
   app.post('/', urlencodedParser, function(req, res){
     const item = new Item({
       name: req.body.item
     });
-    item.save( function(err, items) {
+    item.save( function(err) {
       if (err) throw err
     });
     Item.find({}, function(err, items){
@@ -52,11 +53,6 @@ module.exports = function(app) {
      .then(result => console.log(`Deleted ${result.deletedCount} item.`))
      .catch(err => console.error(`Delete failed with error: ${err}`));
 
-
-    //Item.find({item: req.params.id.replace(/\-/g, " ")}).deleteOne( function(err, data){
-      //if (err) throw err;
-      //res.json(data);
-    //});
     Item.find({}, function(err, items){
       if (err) throw err;
       res.render('index', {data: items});
